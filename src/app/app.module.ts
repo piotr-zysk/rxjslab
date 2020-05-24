@@ -2,10 +2,12 @@ import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 
 import { AppComponent } from './app.component';
+import { TypeAheadComponent } from './type-ahead/type-ahead.component';
 
 @NgModule({
   declarations: [
-    AppComponent
+    AppComponent,
+    TypeAheadComponent
   ],
   imports: [
     BrowserModule
