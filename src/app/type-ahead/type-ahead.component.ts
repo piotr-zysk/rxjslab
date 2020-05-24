@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { FakeApiService } from '../services/fake_api_service';
 import { fromEvent } from 'rxjs';
-import { map, filter, debounceTime, switchMap, mergeMap, distinctUntilChanged } from 'rxjs/operators';
+import { map, filter, debounceTime, switchMap, mergeMap, distinctUntilChanged, retry } from 'rxjs/operators';
 
 @Component({
   selector: 'app-typeahead',
@@ -25,7 +25,12 @@ export class TypeAheadComponent implements OnInit {
           map(translations => this.zip(englishNames, translations))
         ))
       ))​
-    ).subscribe(data => { this.items = data; });
+    ).subscribe(
+      data => { this.items = data; },
+      error => {
+        this.items = [];
+        alert(error);
+      });
   }
 
 

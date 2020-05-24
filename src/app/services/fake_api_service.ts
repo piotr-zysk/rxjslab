@@ -6,6 +6,8 @@ import { Observable } from 'rxjs';
   providedIn: 'root',
 })
 export class FakeApiService {
+  getContinentsErrorProbabilityPercent = 50;
+  getTranslationsErrorProbabilityPercent = 50;
   getContinentsCounter = 0;
   getTranslationsCounter = 0;
   startTime: Date;
@@ -27,15 +29,27 @@ export class FakeApiService {
     return new Observable<string[]>(observer => {
       this.checkStartTime();
       const index = this.getContinentsCounter++;
+      let delayedQuery: any;
       console.log('getContinents$(' + path + ') [' + index + '] - subscribed after ' + this.getTimeSpan() + 's');
-      const runDelayedQuery = setTimeout(() => {
-        observer.next(this.getMatchingContinents(path));
-        console.log('getContinents$(' + path + ') [' + index + '] - value return after ' + this.getTimeSpan() + 's');
-        observer.complete();
-        console.log('getContinents$(' + path + ') [' + index + '] - completed ater ' + this.getTimeSpan() + 's');
-      }, 2000);
+
+      if (this.randomError(this.getContinentsErrorProbabilityPercent)) {
+        delayedQuery = setTimeout(() => {
+          console.log('getContinents$(' + path + ') [' + index + '] - throwed error after ' + this.getTimeSpan() + 's');
+          observer.error('error thrown by getContinents()');
+        }, 1000);
+      }
+      else {
+        delayedQuery = setTimeout(() => {
+          const result = this.getMatchingContinents(path);
+          observer.next(result);
+          console.log(result);
+          console.log('getContinents$(' + path + ') [' + index + '] - value return after ' + this.getTimeSpan() + 's');
+          observer.complete();
+          console.log('getContinents$(' + path + ') [' + index + '] - completed ater ' + this.getTimeSpan() + 's');
+        }, 2000);
+      }
       return function unsubscribe() {
-          clearTimeout(runDelayedQuery);
+          clearTimeout(delayedQuery);
           console.log('getContinents$(' + path + ') [' + index + '] - unsubscribed after ' + this.getTimeSpan() + 's');
         }.bind(this);
     });
@@ -45,16 +59,29 @@ export class FakeApiService {
     return new Observable<string[]>(observer => {
       this.checkStartTime();
       const index = this.getTranslationsCounter++;
-      console.log('getTranslations$(' + continents.join(',') + ') [' + this.getTranslationsCounter + '] - subscribed at ' + this.getTime());
-      const runDelayedQuery = setTimeout(() => {
-        observer.next(this.getTranslatedContinents(continents));
-        console.log('getTranslations$(' + continents.join(',') + ') [' + this.getTranslationsCounter + '] - value return at ' + this.getTime());
-        observer.complete();
-        console.log('getTranslations$(' + continents.join(',') + ') [' + this.getTranslationsCounter + '] - completed at ' + this.getTime());
-      }, 2000);
+      let delayedQuery: any;
+      console.log('getTranslations$(' + continents.join(',') + ') [' + this.getTranslationsCounter + '] - subscribed after ' + this.getTimeSpan() + 's');
+
+      if (this.randomError(this.getTranslationsErrorProbabilityPercent)) {
+        delayedQuery = setTimeout(() => {
+          console.log('getTranslations$(' + continents.join(',') + ') [' + this.getTranslationsCounter + '] - throwed error after ' + this.getTimeSpan() + 's');
+          observer.error('error thrown by getContinents()');
+        }, 2000);
+      }
+      else {
+        delayedQuery = setTimeout(() => {
+          const result = this.getTranslatedContinents(continents);
+          observer.next(result);
+          console.log(result);
+          console.log('getTranslations$(' + continents.join(',') + ') [' + this.getTranslationsCounter + '] - value return after ' + this.getTimeSpan() + 's');
+          observer.complete();
+          console.log('getTranslations$(' + continents.join(',') + ') [' + this.getTranslationsCounter + '] - completed after ' + this.getTimeSpan() + 's');
+        }, 2000);
+      }
+
       return function unsubscribe() {
-          clearTimeout(runDelayedQuery);
-          console.log('getTranslations$(' + continents.join(',') + ') [' + this.getTranslationsCounter + '] - unsubscribed at ' + this.getTime());
+          clearTimeout(delayedQuery);
+          console.log('getTranslations$(' + continents.join(',') + ') [' + this.getTranslationsCounter + '] - unsubscribed after ' + this.getTimeSpan() + 's');
         }.bind(this);
     });
   }
@@ -102,5 +129,9 @@ export class FakeApiService {
         if (item.en === continent)
             return item.pl;
     }
+  }
+
+  private randomError(errorProbability: number): boolean {
+    return Math.random() * 100 < errorProbability;
   }
 }
