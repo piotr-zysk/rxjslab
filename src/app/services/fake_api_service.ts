@@ -41,24 +41,6 @@ export class FakeApiService {
     });
   }
 
-  public getTranslations$(continents: string[]): Observable<string[]> {
-    return new Observable<string[]>(observer => {
-      this.checkStartTime();
-      const index = this.getTranslationsCounter++;
-      console.log('getTranslations$(' + continents.join(',') + ') [' + this.getTranslationsCounter + '] - subscribed at ' + this.getTime());
-      const runDelayedQuery = setTimeout(() => {
-        observer.next(this.getTranslatedContinents(continents));
-        console.log('getTranslations$(' + continents.join(',') + ') [' + this.getTranslationsCounter + '] - value return at ' + this.getTime());
-        observer.complete();
-        console.log('getTranslations$(' + continents.join(',') + ') [' + this.getTranslationsCounter + '] - completed at ' + this.getTime());
-      }, 2000);
-      return function unsubscribe() {
-          clearTimeout(runDelayedQuery);
-          console.log('getTranslations$(' + continents.join(',') + ') [' + this.getTranslationsCounter + '] - unsubscribed at ' + this.getTime());
-        }.bind(this);
-    });
-  }
-
   private zeroFill(num, len) {
     return (Array(len).join('0') + num).slice(-len);
   }
