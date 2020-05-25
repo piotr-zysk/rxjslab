@@ -41,6 +41,10 @@ export class FakeApiService {
     });
   }
 
+  getTime() {
+    return new Date().toISOString().substring(11, 23);
+  }
+
   private zeroFill(num, len) {
     return (Array(len).join('0') + num).slice(-len);
   }
@@ -62,23 +66,8 @@ export class FakeApiService {
     return this.translations.map(el => el.en);
   }
 
-  private getTime() {
-    return new Date().toISOString().substring(11, 23);
-  }
-
   private getMatchingContinents(searchKey: string): string[] {
     return this.getContinents().filter(el => el.indexOf(searchKey) > -1);
   }
 
-  private getTranslatedContinents(continents: string[]): string[] {
-    const result = [];
-    for (let i; i < continents.length; i++) {
-      result.push(this.getTranslatedContinent(continents[i]));
-    }
-    return result;
-  }
-
-  private getTranslatedContinent(continent: string): string {
-    return 'test';
-  }
 }
